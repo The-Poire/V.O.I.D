@@ -39,8 +39,9 @@ LG.setShader()
 
 local x,y = 0,0
 local objects = {
-  x = {10},
+  x = {0},
   y = {0},
+  z = {10},
   d = {10},
 }
 
@@ -57,15 +58,44 @@ love.graphics.setPointSize(10)
   mesh = LG.newMesh(tmp,"triangles","static")
 end]]
 
+function love.update(dt)
+  if love.keyboard.isDown("up") then y = y + 1
+  elseif love.keyboard.isDown("down") then y = y - 1
+  end
+
+  if love.keyboard.isDown("left") then x = x + 1
+  elseif love.keyboard.isDown("right") then x = x - 1
+  end
+  
+end
 
 function love.draw()
   
   for k,v in ipairs(objects.x) do
-    LG.points( (v + screen_width)* cos(rad(dir[1])) ,  (objects.y[k] + screen_height)* sin(rad(dir[1])) )
+
+    local rx = rad(dir[1]+90)
+    if rx < 90 and rx > 0 then
+
+    LG.circle("fill",
+
+    screen_width + (x + screen_width + v)* cos(rx)
+    ,
+    screen_height + (objects.y[k] + screen_height + y)* cos(rad(dir[2] - 90))
+    ,
+    objects.d[k] )
+    end
   end
 
 end
 
+function love.mousemoved(x,y,dx,dy)
+  --print(dx,dy)
+  dir[1] = dir[1] + dx / 2
+  dir[2] = dir[2] - dy / 2
+end
+
 function love.keyreleased(key,scancode)
   if key=="escape" then love.event.quit() end
+  if key=="return" then x,y = 0,0 end
 end
+
